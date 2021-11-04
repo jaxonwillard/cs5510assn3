@@ -12,9 +12,40 @@ class Node():
     def __eq__(self, other):
         return self.position == other.position
 
+class Orientation():
+
+  def __init__(self):
+    u= (-1,0)
+    d=  (1,0)
+    l=  (0,-1)
+    r=  (0,1)
+    ur= (-1,1)
+    ul= (-1,-1)
+    dl= (1,-1)
+    dr= (1,1)
+    sides      = [u,d,ur,ul,dr,dl]
+    up_down    = [r,l,ur,ul,dr,dl] 
+    diag_right = [r,l,u,d,ul,dr]
+    diag_left  = [r,l,u,d,ur,dl]
+    self.options = {
+      "u": sides,
+      "d": sides,
+      "l": up_down,
+      "r": up_down,
+      "ur": diag_left,
+      "ul": diag_right,
+      "dl": diag_left,
+      "dr": diag_right,
+    }
+    self.orientation = "u" 
+
+  def get_options(self):
+    return self.options[self.orientation]
 
 def astar(maze, start, end):
     """Returns a list of tuples as a path from the given start to the given end in the given maze"""
+    o = Orientation()
+    print(o.get_options())
 
     # Create start and end node
     start_node = Node(None, start)
@@ -55,7 +86,8 @@ def astar(maze, start, end):
 
         # Generate children
         children = []
-        for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]: # Adjacent squares
+        # for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]: # Adjacent squares
+        for new_position in o.get_options():
 
             # Get node position
             node_position = (current_node.position[0] + new_position[0], current_node.position[1] + new_position[1])
@@ -95,6 +127,14 @@ def astar(maze, start, end):
             # Add the child to the open list
             open_list.append(child)
 
+def show_path(path, maze):
+  for i in range(len(maze)):
+    for j in range(len(maze[i])):
+      if (i,j) in path:
+        print("_", end="  ")
+      else:
+        print(maze[i][j], end="  ")
+    print("")
 
 def main():
 
@@ -110,10 +150,12 @@ def main():
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
 
     start = (0, 0)
-    end = (7, 6)
+    end = (6, 6)
 
     path = astar(maze, start, end)
     print(path)
+
+    show_path(set(path), maze)
 
 
 if __name__ == '__main__':
