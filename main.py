@@ -15,18 +15,19 @@ class Node():
 class Orientation():
 
   def __init__(self):
-    u= (-1,0)
-    d=  (1,0)
-    l=  (0,-1)
-    r=  (0,1)
-    ur= (-1,1)
-    ul= (-1,-1)
-    dl= (1,-1)
-    dr= (1,1)
-    sides      = [u,d,ur,ul,dr,dl]
-    up_down    = [r,l,ur,ul,dr,dl] 
-    diag_right = [r,l,u,d,ul,dr]
-    diag_left  = [r,l,u,d,ur,dl]
+    self.u= (-1,0)
+    self.d=  (1,0)
+    self.l=  (0,-1)
+    self.r=  (0,1)
+    self.ur= (-1,1)
+    self.ul= (-1,-1)
+    self.dl= (1,-1)
+    self.dr= (1,1)
+    
+    sides      = [self.u,self.d,self.ur,self.ul,self.dr, self.dl]
+    up_down    = [self.r,self.l,self.ur,self.ul,self.dr,self.dl] 
+    diag_right = [self.r,self.l,self.u,self.d,self.ul,self.dr]
+    diag_left  = [self.r,self.l,self.u,self.d,self.ur,self.dl]
     self.options = {
       "u": sides,
       "d": sides,
@@ -41,6 +42,27 @@ class Orientation():
 
   def get_options(self):
     return self.options[self.orientation]
+
+  def update_orientation(self, current_position, child_position):
+    diff = (current_position[0]-child_position[0], current_position[1]-child_position[1])
+    if diff == self.u:
+      self.orientation = "u"
+    elif diff == self.d:
+      self.orientation = "d"
+    elif diff == self.l:
+      self.orientation = "l"
+    elif diff == self.r:
+      self.orientation = "r"
+    elif diff == self.ur:
+      self.orientation = "ur"
+    elif diff == self.ul:
+      self.orientation = "ul"
+    elif diff == self.dl:
+      self.orientation = "dl"
+    elif diff == self.dr:
+      self.orientation = "dr"
+    else:
+      print("---err---", diff)
 
 def astar(maze, start, end):
     """Returns a list of tuples as a path from the given start to the given end in the given maze"""
@@ -125,6 +147,7 @@ def astar(maze, start, end):
                     continue
 
             # Add the child to the open list
+            o.update_orientation(current_node.position, child.position)
             open_list.append(child)
 
 def show_path(path, maze):
@@ -132,6 +155,7 @@ def show_path(path, maze):
     for j in range(len(maze[i])):
       if (i,j) in path:
         print("_", end="  ")
+        
       else:
         print(maze[i][j], end="  ")
     print("")
