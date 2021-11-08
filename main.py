@@ -1,17 +1,4 @@
-class Node():
-    """A node class for A* Pathfinding"""
-
-    def __init__(self, parent=None, position=None):
-        self.parent = parent
-        self.position = position
-
-        self.g = 0
-        self.h = 0
-        self.f = 0
-
-    def __eq__(self, other):
-        return self.position == other.position
-
+from string import ascii_lowercase
 class Orientation():
 
   def __init__(self):
@@ -63,6 +50,21 @@ class Orientation():
       self.orientation = "dr"
     else:
       print("---err---", diff)
+class Node():
+    """A node class for A* Pathfinding"""
+
+    def __init__(self, parent=None, position=None):
+        self.parent = parent
+        self.position = position
+
+        self.g = 0
+        self.h = 0
+        self.f = 0
+        self.o = Orientation()
+
+    def __eq__(self, other):
+        return self.position == other.position
+
 
 def astar(maze, start, end):
     """Returns a list of tuples as a path from the given start to the given end in the given maze"""
@@ -109,7 +111,7 @@ def astar(maze, start, end):
         # Generate children
         children = []
         # for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]: # Adjacent squares
-        for new_position in o.get_options():
+        for new_position in current_node.o.get_options():
 
             # Get node position
             node_position = (current_node.position[0] + new_position[0], current_node.position[1] + new_position[1])
@@ -140,6 +142,7 @@ def astar(maze, start, end):
             child.g = current_node.g + 1
             child.h = ((child.position[0] - end_node.position[0]) ** 2) + ((child.position[1] - end_node.position[1]) ** 2)
             child.f = child.g + child.h
+            child.o = child.o.update_orientation(current_node.position, child.position)
 
             # Child is already in the open list
             for open_node in open_list:
@@ -147,17 +150,17 @@ def astar(maze, start, end):
                     continue
 
             # Add the child to the open list
-            o.update_orientation(current_node.position, child.position)
             open_list.append(child)
 
 def show_path(path, maze):
-  for i in range(len(maze)):
-    for j in range(len(maze[i])):
-      if (i,j) in path:
-        print("_", end="  ")
-        
-      else:
-        print(maze[i][j], end="  ")
+
+  mcopy = [i for i in maze]
+  for i, step in enumerate(path):
+    mcopy[step[0]][step[1]] = "%s" % ascii_lowercase[i]
+
+  for i in range(len(mcopy)):
+    for j in range(len(mcopy[i])):
+      print(mcopy[i][j], end="  ")
     print("")
 
 def main():
@@ -173,13 +176,18 @@ def main():
             [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
 
+    # maze = [
+    #   [0,0,0],
+    #   [1,0,0]
+    # ]
+
     start = (0, 0)
-    end = (6, 6)
+    end = (6,6)
 
     path = astar(maze, start, end)
     print(path)
 
-    show_path(set(path), maze)
+    show_path(path, maze)
 
 
 if __name__ == '__main__':
