@@ -68,8 +68,6 @@ class Node():
 
 def astar(maze, start, end):
     """Returns a list of tuples as a path from the given start to the given end in the given maze"""
-    o = Orientation()
-    print(o.get_options())
 
     # Create start and end node
     start_node = Node(None, start)
@@ -111,6 +109,8 @@ def astar(maze, start, end):
         # Generate children
         children = []
         # for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]: # Adjacent squares
+
+
         for new_position in current_node.o.get_options():
 
             # Get node position
@@ -142,7 +142,7 @@ def astar(maze, start, end):
             child.g = current_node.g + 1
             child.h = ((child.position[0] - end_node.position[0]) ** 2) + ((child.position[1] - end_node.position[1]) ** 2)
             child.f = child.g + child.h
-            child.o = child.o.update_orientation(current_node.position, child.position)
+            child.o.update_orientation(current_node.position, child.position)
 
             # Child is already in the open list
             for open_node in open_list:
@@ -178,11 +178,11 @@ def main():
 
     # maze = [
     #   [0,0,0],
-    #   [1,0,0]
+    #   [0,1,1]
     # ]
 
     start = (0, 0)
-    end = (6,6)
+    end = (4,5)
 
     path = astar(maze, start, end)
     print(path)
